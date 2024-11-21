@@ -150,6 +150,26 @@
             outline: none;
         }
     </style>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1121933362895965');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1121933362895965&ev=PageView&noscript=1" /></noscript>
+    <!-- End Meta Pixel Code -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
 </head>
 
 <body>
@@ -565,16 +585,35 @@
         <h5 class="fw-bold" style="color: #198754;">✔ SUPPORT PAR WHATSAPP</h5>
         <p class="fw-bold mt-3">Plus vous commencez tôt, plus vite les résultats arrivent 💪</p>
     </div>
+
+
+
     <div class="text-white py-2 text-center fw-bold" style="background-color: #ff0000;">
         ATTENTION : La promotion est valable seulement aujourd'hui, le <span id="currentDate"></span>.
     </div>
-    <section id="cta" class="py-2 text-center">
-        <div class="container">
-            <img src="./images/price.jpeg" style="width: 100%;" alt="">
-            <button class="btn btn-success btn-lg mt-3 fw-bold" style="width: 100%; max-width: 300px;">Acheter
-                Maintenant</button>
+
+
+
+    <div class="container text-center py-3" style=" border-radius: 10px; max-width: 400px; margin: auto;">
+
+        <div style="margin-top: 10px; font-size: 1.2rem; color: #333; font-weight: bold;">
+            De <span class="original-price" style="text-decoration: line-through; color: #ff0000;">147,90 €</span> Pour Seulement
         </div>
-    </section>
+        <div style="margin: 10px 0;">
+            <span style="font-size: 1.5rem; font-weight: bold; color: #000;">7 x</span>
+            <span class="installment-value" style="font-size: 3.5rem; font-weight: bold; color: #000;">1<span style="font-size: 1.5rem;">,42 €</span></span>
+        </div>
+        <div style="font-size: 1.1rem; color: #000; margin-bottom: 15px;">
+            Ou <span class="one-time-value" style="font-weight: bold; font-size: 1.8rem;">9,90 €</span> en espèces <br>
+            <span >(Paiement unique et accès à vie)</span>
+        </div>
+        <button style="background-color: #198754; color: white; font-weight: bold; padding: 10px 20px; font-size: 1.2rem; border: none; border-radius: 5px; cursor: pointer;">
+            Acheter Maintenant
+        </button>
+    </div>
+    
+    </div>
+    </div>
     <section class="py-5 bg-body-tertiary">
         <div class="container text-center">
             <h2 class="fw-bold mb-4" data-aos="fade-up">Garantie de satisfaction</h2>
@@ -607,6 +646,60 @@
         });
     </script>
     <script>
+        // Valores iniciais dos produtos (em EUR como base)
+        const baseValues = {
+            originalPrice: 147.90,
+            installmentValue: 1.42,
+            oneTimeValue: 9.90
+        };
+
+        // Conversão de moeda (valores fictícios para exemplo, deve ser atualizado com dados reais ou APIs)
+        const currencyRates = {
+            BRL: { rate: 5.5, symbol: "R$", decimal: "," }, // Real
+            USD: { rate: 1.1, symbol: "$", decimal: "." },  // Dólar
+            EUR: { rate: 1.0, symbol: "€", decimal: "," },  // Euro
+            GBP: { rate: 0.85, symbol: "£", decimal: "," }  // Libra
+            // Adicione mais moedas aqui se necessário
+        };
+
+        // Detecta o país do usuário usando o navegador ou APIs externas
+        async function getUserCountry() {
+            try {
+                // Alternativa: usar uma API como IP Geolocation (trocar para obter chave)
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                return data.country_code || "EUR"; // Retorna código do país (ex: BR, US, FR)
+            } catch (error) {
+                console.error("Erro ao detectar o país:", error);
+                return "EUR"; // Padrão: Euro
+            }
+        }
+
+        // Atualiza os valores da página com base no país detectado
+        async function updatePrices() {
+            const country = await getUserCountry();
+            const currency = currencyRates[country] || currencyRates["EUR"]; // Padrão: EUR se moeda não encontrada
+
+            // Calcula os novos valores
+            const convertedOriginalPrice = (baseValues.originalPrice * currency.rate).toFixed(2);
+            const convertedInstallmentValue = (baseValues.installmentValue * currency.rate).toFixed(2);
+            const convertedOneTimeValue = (baseValues.oneTimeValue * currency.rate).toFixed(2);
+
+            // Atualiza os elementos da página
+            document.querySelectorAll(".original-price").forEach(el => {
+                el.textContent = `${currency.symbol} ${convertedOriginalPrice.replace(".", currency.decimal)}`;
+            });
+            document.querySelectorAll(".installment-value").forEach(el => {
+                el.textContent = `${currency.symbol} ${convertedInstallmentValue.replace(".", currency.decimal)}`;
+            });
+            document.querySelectorAll(".one-time-value").forEach(el => {
+                el.textContent = `${currency.symbol} ${convertedOneTimeValue.replace(".", currency.decimal)}`;
+            });
+        }
+
+        // Chama a função para atualizar os valores
+        updatePrices()
+
         function updateDate() {
             const dateElement = document.getElementById("currentDate");
             const today = new Date();
